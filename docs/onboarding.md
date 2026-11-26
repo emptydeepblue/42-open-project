@@ -96,12 +96,13 @@ You don't close issues from commits: write `Closes #5` in the **pull request des
 ## 5. Repository layout
 
 ```
-docs/       specification and documentation (this file)
-lib/mesh/   mesh protocol: routing, relay, queue, deduplication
-lib/radio/  radio interface + ESP-NOW and LoRa drivers
-sim/        PC simulator
-src/        ESP32 firmware entry point
-test/       automated tests (run with pio test -e native)
+docs/             specification and documentation (this file)
+lib/mesh/         mesh protocol: routing, relay, queue, deduplication
+lib/radio/        portable Radio interface only (no hardware headers)
+lib/radio_esp32/  ESP-NOW and LoRa drivers, ESP32 only (not built by pio test -e native)
+sim/              PC simulator
+src/              ESP32 firmware entry point
+test/             automated tests (run with pio test -e native)
 ```
 
 ## 6. Who does what
