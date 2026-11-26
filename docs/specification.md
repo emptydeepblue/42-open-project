@@ -88,7 +88,7 @@ Features are split into a mandatory core, on which we ask to be evaluated, and o
 | N8 | Priority SOS message with position | Firmware + Protocol |
 | N9 | Device firmware: screen, buttons, network status | Firmware |
 | N10 | Swappable radio layer: the same protocol runs on ESP-NOW and on LoRa | Protocol + Firmware |
-| N11 | PC network simulator using the same protocol code | Protocol |
+| N11 | PC network simulator using the same protocol code | Testing |
 
 **Optional extensions**
 
@@ -143,11 +143,13 @@ Work is split into independent modules: the core depends on protocol and hardwar
 
 | Role | Person | Modules | Features |
 | --- | --- | --- | --- |
-| Lead, protocol and hardware | Emma | Mesh protocol, simulator, hardware assembly | N1–N5, N10, N11 |
-| Device firmware | TBD | Screen, buttons, Bluetooth, GPS | N8, N9 |
-| Security | TBD | Encryption, authentication, replay protection | N6 |
+| Lead, protocol and hardware | Emma | Mesh protocol, radio abstraction interface, SOS priority queue, hardware assembly | N1–N5, N8 (protocol), N10 (interface) |
+| Device firmware | TBD | ESP-NOW and LoRa drivers, duty-cycle control, screen, buttons, Bluetooth, GPS | N8 (device), N9, N10 (drivers) |
+| Security | TBD | Encryption, authentication, replay protection, security tests | N6 |
 | Interface | TBD | Web page or app, visualisation extensions | N7, E1, E2 |
-| Testing and integration | TBD | Automated tests, simulator scenarios, checklist runs | C1–C12 |
+| Testing and integration | TBD | PC simulator, automated tests and CI, simulator scenarios, checklist runs | N11, C1–C12 |
+
+Shared features are split along the radio abstraction: the lead defines the interface that the protocol uses, and the firmware role implements the ESP-NOW and LoRa drivers behind it. The simulator is a third implementation of the same interface, owned by testing and integration.
 
 **How we work**
 
