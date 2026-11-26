@@ -23,19 +23,26 @@ An emergency messaging network: ESP32 boards with LoRa radios relay each other's
 
 ## 2. Setup
 
-You need Linux, macOS or WSL on Windows. On Windows, keep the repo **inside WSL** (not under `/mnt/c`) and open it with VS Code + the WSL extension.
+Everywhere:
 
 ```bash
-sudo apt install pipx && pipx ensurepath     # Ubuntu/WSL; macOS: brew install pipx
 git clone git@github.com:emptydeepblue/42-open-project.git
 cd 42-open-project
 git config user.name "<intra login>"         # only for this repo
 git config user.email "<intra email>"
-pipx install platformio      # open a new terminal if `pio` is not found
-pio test -e native           # must say PASSED
 ```
 
 Your commits are signed with your intra login and email, so it is clear who did what. Add your intra email to your GitHub account (*Settings → Emails*), otherwise GitHub can't link your commits to your profile.
+
+**Campus machines.** PlatformIO is being installed by the 42 IT staff: **don't install it yourself**. Once it is there, run `pio test -e native` (must say PASSED). Flashing boards from campus machines is pending the same request (serial port access).
+
+**Personal machines** (Linux, macOS, WSL). On Windows, keep the repo **inside WSL** (not under `/mnt/c`) and open it with VS Code + the WSL extension.
+
+```bash
+sudo apt install pipx && pipx ensurepath     # Ubuntu/WSL; macOS: brew install pipx
+pipx install platformio                      # open a new terminal if `pio` is not found
+pio test -e native                           # must say PASSED
+```
 
 That's all you need: protocol, simulator and tests run on the PC. The hardware stays at school, and flashing instructions will be added here once the ESP32 environment is set up.
 
