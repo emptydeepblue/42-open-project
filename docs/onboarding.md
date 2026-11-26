@@ -66,7 +66,7 @@ Refs #<issue>
 
 - **type** and **scope**: only the values in the box in [How we work](#3-how-we-work)
 - **summary**: English, imperative ("add", not "added"), lowercase, no final period
-- **`Refs #N`** goes on its own line after a blank line, and links the commit to issue N
+- **`Refs #N`** goes on its own line after a blank line: N is the issue this commit works on (usually your branch's issue)
 
 Example, for work on issue #5:
 

@@ -86,7 +86,7 @@ Features are split into a mandatory core, on which we ask to be evaluated, and o
 | N6 | End-to-end encryption and message authentication | Security |
 | N7 | Minimal web page served by the ESP32 to write and read messages | Firmware |
 | N8 | Priority SOS message with position | Firmware + Protocol |
-| N9 | Device firmware: screen, buttons, network status | Firmware |
+| N9 | Device firmware: screen, buttons, network status, terminal or relay mode | Firmware |
 | N10 | Swappable radio layer: the same protocol runs on ESP-NOW and on LoRa | Protocol + Firmware |
 | N11 | PC network simulator using the same protocol code | Testing |
 
@@ -97,7 +97,7 @@ Features are split into a mandatory core, on which we ask to be evaluated, and o
 | E1 | Gateway to the internet when a node has connectivity |
 | E2 | Real-time map of nodes and routes |
 | E3 | Power consumption measurement and battery life estimate |
-| E4 | 3D-printed case for the handheld device |
+| E4 | 3D-printed case for the nodes |
 | E5 | Fixed node with an environmental sensor that raises alerts on the network |
 
 Open question: the maximum message length will be set after the first radio tests (roughly 150 characters, given the space taken by header and encryption).
@@ -106,17 +106,22 @@ Open question: the maximum message length will be set after the first radio test
 
 Five nodes are needed to demonstrate multi-hop; everonel pays for the hardware up front and it stays at school for the whole project.
 
+**Five identical complete nodes.** Every node has the same hardware (screen, buttons, battery; GPS on 1–2 of them) and the same firmware. A configuration setting decides its role: **terminal**, used to write and read messages, or **relay**, which only forwards traffic; in relay mode the screen shows relay statistics and can go to sleep. Any node can replace any other during the demo.
+
 | Component | Quantity | Notes |
 | --- | --- | --- |
 | ESP32 | 5 | 2–3 already available |
 | LoRa module 868 MHz (SX1262 or SX1276) | 5 | European band, never 433 or 915 MHz |
 | 868 MHz antenna | 5 | Never transmit without an antenna attached |
-| OLED screen + buttons | 3 | For handheld nodes |
-| LiPo battery + charging module | 3 | For handheld nodes |
+| OLED screen + buttons | 5 | One per node |
+| LiPo battery + charging module | 5 | One per node |
 | GPS module | 1–2 | For SOS with position |
-| Connectors, breadboard, multimeter | — | Already available |
+| Perfboard, headers, connectors | 5 sets | Final nodes are soldered on perfboard |
+| Breadboards, jumper wires, multimeter, soldering iron | — | Already available; breadboards for prototyping only |
 
-**Budget:** about €150–200 (estimate, to be confirmed with actual prices), paid up front by everonel.
+**Budget:** about €150–200, paid up front by everonel. To be rechecked with actual prices: the estimate predates the move to five complete nodes.
+
+**Assembly.** lemarino builds a reference node first and writes an assembly guide from it. Then, in a team session, every member assembles one node following the guide, and each node is labelled with its builder. A test firmware checks every node (screen, buttons, radio, battery, GPS where fitted) before it joins the network.
 
 **Development tools:** C/C++ with PlatformIO or ESP-IDF, Git with peer code review, the PC simulator to test the protocol without hardware.
 
@@ -168,7 +173,7 @@ The project lasts 6 months from the validation of this specification; the start 
 flowchart TB
     F1["<b>Month 1 — Foundations</b><br/>Packet format frozen; ESP-NOW prototype with 2–3 ESP32 boards<br/>Basic PC simulator, choice of encryption library, hardware ordered"]
     G1{{"Milestone: packet format frozen,<br/>modules work in parallel"}}
-    F2["<b>Months 2–3 — Network core</b><br/>Multi-hop, deduplication, queue and acknowledgements on simulator and ESP-NOW<br/>Screen and button firmware, first version of the interface"]
+    F2["<b>Months 2–3 — Network core</b><br/>Multi-hop, deduplication, queue and acknowledgements on simulator and ESP-NOW<br/>Screen and button firmware, first version of the interface<br/>Reference node, assembly guide and team assembly session"]
     F3["<b>Month 4 — LoRa and security</b><br/>Move to LoRa modules with duty-cycle control<br/>Encryption and authentication integrated into the protocol, replay protection"]
     G2{{"Milestone: encrypted message over 3 hops on LoRa"}}
     F4["<b>Month 5 — Integration</b><br/>SOS with position, complete interface, test mode for the demo<br/>Full internal run of checklist C1–C12"]
