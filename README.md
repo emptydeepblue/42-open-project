@@ -6,7 +6,7 @@ Open Project — 42 Firenze.
 
 ## Status
 
-📝 Phase 1: writing the specification, awaiting validation.
+📝 Phase 0: writing the specification, awaiting validation.
 
 ## Documentation
 
