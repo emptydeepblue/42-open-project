@@ -13,13 +13,13 @@ What you need to start working on the project. Keep this file short and update i
 | **label** | issue tag: `task` (work to do) · `decision` (choice the team must make) · `bug` |
 | **milestone** | a project phase on GitHub, groups the issues of that phase |
 | **lead** | everonel, who creates issues and keeps the roadmap |
-| **N1–N11** | mandatory features in the specification |
+| **N1–N12** | mandatory features in the specification |
 | **E1–E5** | optional extensions in the specification |
-| **C1–C12** | final evaluation checklist in the specification |
+| **C1–C13** | final evaluation checklist in the specification |
 
 ## 1. What we are building
 
-An emergency messaging network: ESP32 boards with LoRa radios relay each other's messages, no internet needed. Read the [specification](specification.md). The final evaluation checks the **checklist C1–C12** at the end of it, so everything we do should serve that list.
+An emergency messaging network: ESP32 boards with LoRa radios relay each other's messages, no internet needed. Read the [specification](specification.md). The final evaluation checks the **checklist C1–C13** at the end of it, so everything we do should serve that list.
 
 ## 2. Setup
 
