@@ -12,7 +12,7 @@ What you need to start working on the project. Keep this file short and update i
 | **status** | where an issue stands: *Backlog* (later) · *Todo* (now, not started) · *In progress* · *In review* (PR open) · closed = done |
 | **label** | issue tag: `task` (work to do) · `decision` (choice the team must make) · `bug` |
 | **milestone** | a project phase on GitHub, groups the issues of that phase |
-| **lead** | Emma, who creates issues and keeps the roadmap |
+| **lead** | everonel, who creates issues and keeps the roadmap |
 | **N1–N11** | mandatory features in the specification |
 | **E1–E5** | optional extensions in the specification |
 | **C1–C12** | final evaluation checklist in the specification |
@@ -99,12 +99,14 @@ test/       automated tests (run with pio test -e native)
 
 ## 6. Who does what
 
-| Area | Person |
+| Person | Area |
 | --- | --- |
-| Lead, protocol, hardware | Emma |
-| Device firmware | TBD |
-| Security | TBD |
-| Interface | TBD |
-| Testing and integration | TBD |
+| everonel | Lead, mesh protocol |
+| lemarino | Firmware and hardware: radio drivers, duty cycle, board bring-up, assembly guide |
+| gpirozzi | Firmware and interface: screen, buttons, GPS, minimal web page |
+| lotrapan | Security |
+| marboccu | Testing and integration: simulator, tests, CI |
+
+lemarino and gpirozzi work as a pair and review each other's pull requests.
 
 Stuck? Ask the others for help.

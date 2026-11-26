@@ -15,7 +15,7 @@ We are building an emergency messaging network that works without internet or a 
 - Messages stored and delivered when an unreachable node comes back online
 - End-to-end encrypted messages: an intermediate node relays but cannot read
 - An SOS message with position that takes priority over all other traffic
-- A reproducible live demo during evaluation, with Wi-Fi switched off
+- A reproducible live demo during evaluation, with no internet, Wi-Fi infrastructure or cellular network
 
 **Out of scope:** voice, images, file attachments and any use in real emergencies. This is an educational prototype, not a certified device.
 
@@ -38,10 +38,10 @@ Each node is a stack of layers: the mesh protocol sits in the middle and does no
 
 ```mermaid
 flowchart TB
-    PHONE["Phone or PC<br/><small>browser or Bluetooth app</small>"]
+    PHONE["Phone or PC<br/><small>web browser</small>"]
 
     subgraph NODE["ESP32 node"]
-        UI["Interface<br/><small>web page served by the ESP32 or Bluetooth app</small>"]
+        UI["Interface<br/><small>minimal web page served by the ESP32</small>"]
         APP["Application<br/><small>text messages, SOS with position, screen and buttons</small>"]
         SEC["Security<br/><small>end-to-end encryption, authentication, anti-replay</small>"]
         MESH["Mesh protocol<br/><small>routing, multi-hop relay, queue, deduplication</small>"]
@@ -57,7 +57,7 @@ flowchart TB
     SIM["PC simulator<br/><small>virtual network of 10+ nodes</small>"]
     OTHERS["Other nodes<br/><small>same stack, over radio</small>"]
 
-    PHONE <-->|Wi-Fi or Bluetooth| UI
+    PHONE <-->|Wi-Fi access point of the node| UI
     SIM -.-|same code| MESH
     LORA <-->|radio| OTHERS
 
@@ -68,7 +68,7 @@ flowchart TB
 - **Framework:** PlatformIO with ESP-IDF or the Arduino core for ESP32, to be decided together
 - **Radio:** ESP-NOW for the prototype using the ESP32 boards already available, LoRa at 868 MHz (SX1262 or SX1276 modules) for the final devices
 - **Encryption:** a well-established library, e.g. libsodium or mbedTLS, chosen in the first month
-- **Interface:** a web page served by the ESP32 or an app connecting over Bluetooth
+- **Interface:** a minimal web page served by the ESP32 over its own Wi-Fi access point; no mobile app
 
 ## Features
 
@@ -84,7 +84,7 @@ Features are split into a mandatory core, on which we ask to be evaluated, and o
 | N4 | Store-and-forward: message queue for temporarily unreachable nodes | Protocol |
 | N5 | End-to-end delivery acknowledgement | Protocol |
 | N6 | End-to-end encryption and message authentication | Security |
-| N7 | Interface to write and read messages (web page served by the ESP32 or Bluetooth app) | Interface |
+| N7 | Minimal web page served by the ESP32 to write and read messages | Firmware |
 | N8 | Priority SOS message with position | Firmware + Protocol |
 | N9 | Device firmware: screen, buttons, network status | Firmware |
 | N10 | Swappable radio layer: the same protocol runs on ESP-NOW and on LoRa | Protocol + Firmware |
@@ -104,7 +104,7 @@ Open question: the maximum message length will be set after the first radio test
 
 ## Operational requirements
 
-Five nodes are needed to demonstrate multi-hop; Emma pays for the hardware up front and it stays at school for the whole project.
+Five nodes are needed to demonstrate multi-hop; everonel pays for the hardware up front and it stays at school for the whole project.
 
 | Component | Quantity | Notes |
 | --- | --- | --- |
@@ -116,7 +116,7 @@ Five nodes are needed to demonstrate multi-hop; Emma pays for the hardware up fr
 | GPS module | 1–2 | For SOS with position |
 | Connectors, breadboard, multimeter | — | Already available |
 
-**Budget:** about €150–200 (estimate, to be confirmed with actual prices), paid up front by Emma.
+**Budget:** about €150–200 (estimate, to be confirmed with actual prices), paid up front by everonel.
 
 **Development tools:** C/C++ with PlatformIO or ESP-IDF, Git with peer code review, the PC simulator to test the protocol without hardware.
 
@@ -143,13 +143,13 @@ Work is split into independent modules: the core depends on protocol and hardwar
 
 | Role | Person | Modules | Features |
 | --- | --- | --- | --- |
-| Lead, protocol and hardware | Emma | Mesh protocol, radio abstraction interface, SOS priority queue, hardware assembly | N1–N5, N8 (protocol), N10 (interface) |
-| Device firmware | TBD | ESP-NOW and LoRa drivers, duty-cycle control, screen, buttons, Bluetooth, GPS | N8 (device), N9, N10 (drivers) |
-| Security | TBD | Encryption, authentication, replay protection, security tests | N6 |
-| Interface | TBD | Web page or app, visualisation extensions | N7, E1, E2 |
-| Testing and integration | TBD | PC simulator, automated tests and CI, simulator scenarios, checklist runs | N11, C1–C12 |
+| Lead and mesh protocol | everonel | Mesh protocol, radio abstraction interface, SOS priority queue | N1–N5, N8 (protocol), N10 (interface) |
+| Firmware, hardware and interface | lemarino | ESP-NOW and LoRa drivers, duty-cycle control, board bring-up, reference node and assembly guide | N10 (drivers), C12 |
+| Firmware, hardware and interface | gpirozzi | Screen and buttons, GPS and device side of SOS, minimal web page | N7, N8 (device), N9 |
+| Security | lotrapan | Encryption, authentication, replay protection, security tests | N6 |
+| Testing and integration | marboccu | PC simulator, automated tests and CI, simulator scenarios, checklist runs | N11, C1–C12 |
 
-Shared features are split along the radio abstraction: the lead defines the interface that the protocol uses, and the firmware role implements the ESP-NOW and LoRa drivers behind it. The simulator is a third implementation of the same interface, owned by testing and integration.
+Shared features are split along the radio abstraction: the lead defines the interface that the protocol uses, and lemarino implements the ESP-NOW and LoRa drivers behind it. The simulator is a third implementation of the same interface, owned by testing and integration. lemarino and gpirozzi work as a pair on firmware, hardware and the interface, and review each other's pull requests. Optional extensions are picked up by whoever has finished their core work.
 
 **How we work**
 
@@ -199,14 +199,14 @@ The final evaluation checks these requirements one by one with a live test. Exte
 
 | ID | Requirement | How it is verified |
 | --- | --- | --- |
-| C1 | Two nodes exchange a message without Wi-Fi or cellular network | Wi-Fi off, the message appears on the other screen |
+| C1 | Two nodes exchange a message without internet, Wi-Fi infrastructure or cellular network | No router or internet in use, the message appears on the other screen |
 | C2 | A message travels across at least 3 hops | Test mode on, the route is shown on the destination node |
 | C3 | No duplicated or looping messages | Ring network, every message arrives exactly once |
 | C4 | A message for a switched-off node arrives when it is switched back on | Turn off the destination, send, turn it back on |
 | C5 | The sender receives a delivery acknowledgement | The acknowledgement appears on the sending node |
 | C6 | An intermediate node cannot read the content | Show the packet captured on the intermediate node: it is encrypted |
 | C7 | A tampered or replayed message is discarded | Resend a captured packet: the node rejects it |
-| C8 | A message can be written and read from the interface | Live use of the web page or app |
+| C8 | A message can be written and read from the interface | Live use of the web page served by the node |
 | C9 | An SOS with position overtakes other messages | Full queue, the SOS arrives first |
 | C10 | The same protocol works on ESP-NOW and on LoRa | Same demo with both radio types |
 | C11 | The simulator runs a network of at least 10 nodes | Run the simulator and its tests |

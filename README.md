@@ -21,11 +21,11 @@ See [Onboarding](docs/onboarding.md): issue → branch → commit → pull reque
 
 | Member | Role |
 | --- | --- |
-| Emma | Lead, protocol and hardware |
-| — | Device firmware |
-| — | Security |
-| — | Interface |
-| — | Testing and integration |
+| everonel | Lead, mesh protocol |
+| lemarino | Firmware and hardware |
+| gpirozzi | Firmware and interface |
+| lotrapan | Security |
+| marboccu | Testing and integration |
 
 ## License
 
