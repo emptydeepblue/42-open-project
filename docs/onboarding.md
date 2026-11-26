@@ -51,8 +51,7 @@ That's all you need: protocol, simulator and tests run on the PC. The hardware s
 1. **Take your issue** from the GitHub *Issues* tab and set its *Status* to *In progress*
 2. **Create a branch** from `main`: `<type>/<short-name>`, e.g. `feat/mesh-dedup` (type from the box below)
 3. **Commit** using the [commit format](#commit-format): small commits are how you split the work into steps
-4. **Open a pull request** with `Closes #<issue>` in the description and set the *Status* to *In review*. Another member must approve it before merging.
-5. **After the merge, delete the branch**: GitHub deletes it on the remote, you delete your local copy with `git switch main && git pull && git branch -d <branch>`
+4. **Open a pull request**, get it approved, merge it: see [Pull requests](#pull-requests)
 
 > [!IMPORTANT]
 > Only these values in branch names and commits (need a new one? ask the lead):<br>
@@ -84,6 +83,23 @@ git commit -m "feat(mesh): drop packets already seen by message ID" -m "Refs #5"
 (The second `-m` adds the blank line and the `Refs` line for you.)
 
 You don't close issues from commits: write `Closes #5` in the **pull request description** and the issue closes when the PR is merged.
+
+### Pull requests
+
+**Open**
+1. GitHub → *Pull requests* → *New pull request*, base `main` ← compare `<your-branch>`
+2. Title: what the PR does, in plain English. Description: a short list of the changes, then `Closes #<issue>` (one line per issue)
+3. Sidebar: *Assignees* → yourself, *Reviewers* → one teammate (firmware: your pair partner)
+4. Set your issue's *Status* to *In review* and share the PR link on Slack
+
+**Review** (as reviewer)
+- *Files changed* → *Review changes* → **Approve**, or **Request changes** with a comment explaining what to fix
+- The author pushes fixes to the same branch: the PR updates by itself
+
+**Merge** (as author, once approved)
+- Use **Create a merge commit**, never *Squash and merge*: it keeps every commit and its `Refs`
+- The issue closes by itself (thanks to `Closes #N`) and the branch is deleted on GitHub
+- Clean up locally: `git switch main && git pull && git branch -d <your-branch>`
 
 ## 4. Rules
 
