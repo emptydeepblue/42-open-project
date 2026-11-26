@@ -26,11 +26,12 @@ An emergency messaging network: ESP32 boards with LoRa radios relay each other's
 You need Linux, macOS or WSL on Windows. On Windows, keep the repo **inside WSL** (not under `/mnt/c`) and open it with VS Code + the WSL extension.
 
 ```bash
+sudo apt install pipx && pipx ensurepath     # Ubuntu/WSL; macOS: brew install pipx
 git clone git@github.com:emptydeepblue/42-open-project.git
 cd 42-open-project
 git config user.name "<intra login>"         # only for this repo
 git config user.email "<intra email>"
-pipx install platformio      # or: pip install --user platformio
+pipx install platformio      # open a new terminal if `pio` is not found
 pio test -e native           # must say PASSED
 ```
 
