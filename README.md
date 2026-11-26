@@ -10,19 +10,12 @@ Open Project — 42 Firenze.
 
 ## Documentation
 
+- [Onboarding](docs/onboarding.md): start here, covers setup and how we work
 - [Project specification](docs/specification.md)
-
-## Structure
-
-```
-docs/        specification and documentation
-```
 
 ## Contributing
 
-1. Create a branch from `main`
-2. Open a pull request: it needs approval from at least one other member
-3. Open decisions are discussed in issues, one per topic
+See [Onboarding](docs/onboarding.md): issue → branch → commit → pull request reviewed by another member.
 
 ## Team
 
