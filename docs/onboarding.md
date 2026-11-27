@@ -34,13 +34,22 @@ git config user.email "<intra email>"
 
 Your commits are signed with your intra login and email, so it is clear who did what. Add your intra email to your GitHub account (*Settings → Emails*), otherwise GitHub can't link your commits to your profile.
 
-**Campus machines.** PlatformIO is being installed by the 42 IT staff: **don't install it yourself**. Once it is there, run `pio test -e native` (must say PASSED). Flashing boards from campus machines is pending the same request (serial port access).
+**Campus machines.** Install PlatformIO in your own account (no sudo needed). Its toolchains (~1.5 GB) must go to `/sgoinfre`, not your home, which is too small. `/sgoinfre` is shared by all campus PCs: you download them once and find them on every PC.
+
+```bash
+echo 'export PLATFORMIO_CORE_DIR=/sgoinfre/$USER/.platformio' >> ~/.bashrc
+source ~/.bashrc
+pipx install platformio==6.2.0               # open a new terminal if `pio` is not found
+pio test -e native                           # must say PASSED
+```
+
+Don't install the *PlatformIO IDE* extension in VS Code: it downloads its own copy into your home and fills it. Use `pio` in the terminal. The serial ports of ESP32 boards are open to students on every campus PC, so you can flash from any of them.
 
 **Personal machines** (Linux, macOS, WSL). On Windows, keep the repo **inside WSL** (not under `/mnt/c`) and open it with VS Code + the WSL extension.
 
 ```bash
 sudo apt install pipx && pipx ensurepath     # Ubuntu/WSL; macOS: brew install pipx
-pipx install platformio                      # open a new terminal if `pio` is not found
+pipx install platformio==6.2.0               # same version as campus; open a new terminal if `pio` is not found
 pio test -e native                           # must say PASSED
 ```
 
