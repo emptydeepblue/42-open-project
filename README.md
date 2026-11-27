@@ -6,33 +6,26 @@ Open Project — 42 Firenze.
 
 ## Status
 
-📝 Phase 1: writing the specification, awaiting validation.
+📝 Phase 0: writing the specification, awaiting validation.
 
 ## Documentation
 
+- [Onboarding](docs/onboarding.md): start here, covers setup and how we work
 - [Project specification](docs/specification.md)
-
-## Structure
-
-```
-docs/        specification and documentation
-```
 
 ## Contributing
 
-1. Create a branch from `main`
-2. Open a pull request: it needs approval from at least one other member
-3. Open decisions are discussed in issues, one per topic
+See [Onboarding](docs/onboarding.md): issue → branch → commit → pull request reviewed by another member.
 
 ## Team
 
 | Member | Role |
 | --- | --- |
-| Emma | Lead, protocol and hardware |
-| — | Device firmware |
-| — | Security |
-| — | Interface |
-| — | Testing and integration |
+| everonel | Lead, mesh protocol |
+| lemarino | Firmware and hardware |
+| gpirozzi | Firmware and interface |
+| lotrapan | Security |
+| marboccu | Testing and integration |
 
 ## License
 

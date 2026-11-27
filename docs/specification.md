@@ -14,8 +14,9 @@ We are building an emergency messaging network that works without internet or a 
 - Delivery across at least 3 hops through intermediate nodes
 - Messages stored and delivered when an unreachable node comes back online
 - End-to-end encrypted messages: an intermediate node relays but cannot read
+- A closed network: only physically enrolled nodes can send or read messages, and a lost node can be revoked
 - An SOS message with position that takes priority over all other traffic
-- A reproducible live demo during evaluation, with Wi-Fi switched off
+- A reproducible live demo during evaluation, with no internet, Wi-Fi infrastructure or cellular network
 
 **Out of scope:** voice, images, file attachments and any use in real emergencies. This is an educational prototype, not a certified device.
 
@@ -38,12 +39,12 @@ Each node is a stack of layers: the mesh protocol sits in the middle and does no
 
 ```mermaid
 flowchart TB
-    PHONE["Phone or PC<br/><small>browser or Bluetooth app</small>"]
+    PHONE["Phone or PC<br/><small>web browser</small>"]
 
     subgraph NODE["ESP32 node"]
-        UI["Interface<br/><small>web page served by the ESP32 or Bluetooth app</small>"]
+        UI["Interface<br/><small>minimal web page served by the ESP32</small>"]
         APP["Application<br/><small>text messages, SOS with position, screen and buttons</small>"]
-        SEC["Security<br/><small>end-to-end encryption, authentication, anti-replay</small>"]
+        SEC["Security<br/><small>end-to-end encryption, authentication, anti-replay, enrollment</small>"]
         MESH["Mesh protocol<br/><small>routing, multi-hop relay, queue, deduplication</small>"]
         RADIO["Radio abstraction<br/><small>a single interface to send and receive packets</small>"]
         ESPNOW["ESP-NOW<br/><small>early prototype</small>"]
@@ -57,7 +58,7 @@ flowchart TB
     SIM["PC simulator<br/><small>virtual network of 10+ nodes</small>"]
     OTHERS["Other nodes<br/><small>same stack, over radio</small>"]
 
-    PHONE <-->|Wi-Fi or Bluetooth| UI
+    PHONE <-->|Wi-Fi access point of the node| UI
     SIM -.-|same code| MESH
     LORA <-->|radio| OTHERS
 
@@ -68,7 +69,7 @@ flowchart TB
 - **Framework:** PlatformIO with ESP-IDF or the Arduino core for ESP32, to be decided together
 - **Radio:** ESP-NOW for the prototype using the ESP32 boards already available, LoRa at 868 MHz (SX1262 or SX1276 modules) for the final devices
 - **Encryption:** a well-established library, e.g. libsodium or mbedTLS, chosen in the first month
-- **Interface:** a web page served by the ESP32 or an app connecting over Bluetooth
+- **Interface:** a minimal web page served by the ESP32 over its own Wi-Fi access point; no mobile app
 
 ## Features
 
@@ -84,11 +85,12 @@ Features are split into a mandatory core, on which we ask to be evaluated, and o
 | N4 | Store-and-forward: message queue for temporarily unreachable nodes | Protocol |
 | N5 | End-to-end delivery acknowledgement | Protocol |
 | N6 | End-to-end encryption and message authentication | Security |
-| N7 | Interface to write and read messages (web page served by the ESP32 or Bluetooth app) | Interface |
+| N7 | Minimal web page served by the ESP32 to write and read messages | Firmware |
 | N8 | Priority SOS message with position | Firmware + Protocol |
-| N9 | Device firmware: screen, buttons, network status | Firmware |
+| N9 | Device firmware: screen, buttons, network status, terminal or relay mode | Firmware |
 | N10 | Swappable radio layer: the same protocol runs on ESP-NOW and on LoRa | Protocol + Firmware |
-| N11 | PC network simulator using the same protocol code | Protocol |
+| N11 | PC network simulator using the same protocol code | Testing |
+| N12 | Closed membership: a node joins the network only after physical enrollment (e.g. button or serial) and can be revoked if lost or compromised | Security |
 
 **Optional extensions**
 
@@ -97,26 +99,31 @@ Features are split into a mandatory core, on which we ask to be evaluated, and o
 | E1 | Gateway to the internet when a node has connectivity |
 | E2 | Real-time map of nodes and routes |
 | E3 | Power consumption measurement and battery life estimate |
-| E4 | 3D-printed case for the handheld device |
+| E4 | 3D-printed case for the nodes |
 | E5 | Fixed node with an environmental sensor that raises alerts on the network |
 
 Open question: the maximum message length will be set after the first radio tests (roughly 150 characters, given the space taken by header and encryption).
 
 ## Operational requirements
 
-Five nodes are needed to demonstrate multi-hop; Emma pays for the hardware up front and it stays at school for the whole project.
+Five nodes are needed to demonstrate multi-hop; everonel pays for the hardware up front and it stays at school for the whole project.
+
+**Five identical complete nodes.** Every node has the same hardware (screen, buttons, battery; GPS on 1–2 of them) and the same firmware. A configuration setting decides its role: **terminal**, used to write and read messages, or **relay**, which only forwards traffic; in relay mode the screen shows relay statistics and can go to sleep. Any node can replace any other during the demo.
 
 | Component | Quantity | Notes |
 | --- | --- | --- |
 | ESP32 | 5 | 2–3 already available |
 | LoRa module 868 MHz (SX1262 or SX1276) | 5 | European band, never 433 or 915 MHz |
 | 868 MHz antenna | 5 | Never transmit without an antenna attached |
-| OLED screen + buttons | 3 | For handheld nodes |
-| LiPo battery + charging module | 3 | For handheld nodes |
+| OLED screen + buttons | 5 | One per node |
+| LiPo battery + charging module | 5 | One per node |
 | GPS module | 1–2 | For SOS with position |
-| Connectors, breadboard, multimeter | — | Already available |
+| Perfboard, headers, connectors | 5 sets | Final nodes are soldered on perfboard |
+| Breadboards, jumper wires, multimeter, soldering iron | — | Already available; breadboards for prototyping only |
 
-**Budget:** about €150–200 (estimate, to be confirmed with actual prices), paid up front by Emma.
+**Budget:** about €150–200, paid up front by everonel. To be rechecked with actual prices: the estimate predates the move to five complete nodes.
+
+**Assembly.** lemarino builds a reference node first and writes an assembly guide from it. Then, in a team session, every member assembles one node following the guide, and each node is labelled with its builder. A test firmware checks every node (screen, buttons, radio, battery, GPS where fitted) before it joins the network.
 
 **Development tools:** C/C++ with PlatformIO or ESP-IDF, Git with peer code review, the PC simulator to test the protocol without hardware.
 
@@ -143,11 +150,13 @@ Work is split into independent modules: the core depends on protocol and hardwar
 
 | Role | Person | Modules | Features |
 | --- | --- | --- | --- |
-| Lead, protocol and hardware | Emma | Mesh protocol, simulator, hardware assembly | N1–N5, N10, N11 |
-| Device firmware | TBD | Screen, buttons, Bluetooth, GPS | N8, N9 |
-| Security | TBD | Encryption, authentication, replay protection | N6 |
-| Interface | TBD | Web page or app, visualisation extensions | N7, E1, E2 |
-| Testing and integration | TBD | Automated tests, simulator scenarios, checklist runs | C1–C12 |
+| Lead and mesh protocol | everonel | Mesh protocol, radio abstraction interface, SOS priority queue | N1–N5, N8 (protocol), N10 (interface) |
+| Firmware, hardware and interface | lemarino | ESP-NOW and LoRa drivers, duty-cycle control, board bring-up, reference node and assembly guide | N10 (drivers), C12 |
+| Firmware, hardware and interface | gpirozzi | Screen and buttons, GPS and device side of SOS, minimal web page | N7, N8 (device), N9 |
+| Security | lotrapan | Encryption, authentication, replay protection, node enrollment and revocation, security tests | N6, N12 |
+| Testing and integration | marboccu | PC simulator, automated tests and CI, simulator scenarios, checklist runs | N11, C1–C13 |
+
+Shared features are split along the radio abstraction: the lead defines the interface that the protocol uses, and lemarino implements the ESP-NOW and LoRa drivers behind it. The simulator is a third implementation of the same interface, owned by testing and integration. lemarino and gpirozzi work as a pair on firmware, hardware and the interface, and review each other's pull requests. Optional extensions are picked up by whoever has finished their core work.
 
 **How we work**
 
@@ -166,10 +175,10 @@ The project lasts 6 months from the validation of this specification; the start 
 flowchart TB
     F1["<b>Month 1 — Foundations</b><br/>Packet format frozen; ESP-NOW prototype with 2–3 ESP32 boards<br/>Basic PC simulator, choice of encryption library, hardware ordered"]
     G1{{"Milestone: packet format frozen,<br/>modules work in parallel"}}
-    F2["<b>Months 2–3 — Network core</b><br/>Multi-hop, deduplication, queue and acknowledgements on simulator and ESP-NOW<br/>Screen and button firmware, first version of the interface"]
+    F2["<b>Months 2–3 — Network core</b><br/>Multi-hop, deduplication, queue and acknowledgements on simulator and ESP-NOW<br/>Screen and button firmware, first version of the interface<br/>Reference node, assembly guide and team assembly session"]
     F3["<b>Month 4 — LoRa and security</b><br/>Move to LoRa modules with duty-cycle control<br/>Encryption and authentication integrated into the protocol, replay protection"]
     G2{{"Milestone: encrypted message over 3 hops on LoRa"}}
-    F4["<b>Month 5 — Integration</b><br/>SOS with position, complete interface, test mode for the demo<br/>Full internal run of checklist C1–C12"]
+    F4["<b>Month 5 — Integration</b><br/>SOS with position, complete interface, test mode for the demo<br/>Node enrollment and revocation<br/>Full internal run of checklist C1–C13"]
     F5["<b>Month 6 — Polish</b><br/>Bug fixing, documentation, demo rehearsals<br/>Extensions only if the core is complete"]
     G3{{"Final evaluation"}}
 
@@ -189,6 +198,7 @@ The first milestone is the most important: until the packet format is frozen, se
 | A member slows down or leaves the team | Modules fall behind | Independent modules; extensions can be dropped without touching the core |
 | Hardware late or faulty | Development blocked | PC simulator and ESP-NOW prototype with the ESP32 boards already available |
 | Encryption mistakes | Security only on paper | Well-established libraries and dedicated security tests |
+| A node is lost or stolen | An outsider could read or send messages | Revocation removes the node from the network (N12) |
 | Scope too large | Project not finished in 6 months | Checklist limited to the core; new ideas stay as extensions |
 
 ## Final evaluation checklist
@@ -197,15 +207,16 @@ The final evaluation checks these requirements one by one with a live test. Exte
 
 | ID | Requirement | How it is verified |
 | --- | --- | --- |
-| C1 | Two nodes exchange a message without Wi-Fi or cellular network | Wi-Fi off, the message appears on the other screen |
+| C1 | Two nodes exchange a message without internet, Wi-Fi infrastructure or cellular network | No router or internet in use, the message appears on the other screen |
 | C2 | A message travels across at least 3 hops | Test mode on, the route is shown on the destination node |
 | C3 | No duplicated or looping messages | Ring network, every message arrives exactly once |
 | C4 | A message for a switched-off node arrives when it is switched back on | Turn off the destination, send, turn it back on |
 | C5 | The sender receives a delivery acknowledgement | The acknowledgement appears on the sending node |
 | C6 | An intermediate node cannot read the content | Show the packet captured on the intermediate node: it is encrypted |
 | C7 | A tampered or replayed message is discarded | Resend a captured packet: the node rejects it |
-| C8 | A message can be written and read from the interface | Live use of the web page or app |
+| C8 | A message can be written and read from the interface | Live use of the web page served by the node |
 | C9 | An SOS with position overtakes other messages | Full queue, the SOS arrives first |
 | C10 | The same protocol works on ESP-NOW and on LoRa | Same demo with both radio types |
 | C11 | The simulator runs a network of at least 10 nodes | Run the simulator and its tests |
 | C12 | Power and duty cycle stay within legal limits | Show the settings in the code and the duty-cycle counter |
+| C13 | An unenrolled or revoked node can neither send nor read messages | Send from an unenrolled node and from a revoked node: no member accepts their messages, and they cannot decrypt the traffic |

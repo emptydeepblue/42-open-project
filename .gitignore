@@ -1,0 +1,7 @@
+.pio/
+.vscode/
+*.o
+*.out
+
+# 42 subject PDFs: never publish (public repo)
+*.pdf
